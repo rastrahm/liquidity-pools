@@ -10,7 +10,7 @@ import {MockERC20} from "../src/mocks/MockERC20.sol";
 /**
  * @title LiquidityPoolTest
  * @notice Suite TDD del pool: deposit / withdraw / reverts.
- * @dev Fase 2: previews verdes. Caminos felices deposit/withdraw rojos hasta fases 3–4.
+ * @dev Fase 3: deposit verde. Withdraw mutating rojo hasta fase 4.
  */
 contract LiquidityPoolTest is Test {
     uint256 internal constant MINIMUM_LIQUIDITY = 1000;
@@ -92,7 +92,7 @@ contract LiquidityPoolTest is Test {
     }
 
     // -------------------------------------------------------------------------
-    // deposit — caminos felices (rojos hasta fase 3)
+    // deposit — caminos felices (fase 3)
     // -------------------------------------------------------------------------
 
     /**

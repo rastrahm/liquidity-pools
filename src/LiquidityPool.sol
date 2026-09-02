@@ -1,6 +1,8 @@
 // SPDX-License-Identifier: MIT
 pragma solidity 0.8.24;
 
+import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
+import {SafeERC20} from "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
 import {ReentrancyGuard} from "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
 
 import {ILiquidityPool} from "./interfaces/ILiquidityPool.sol";
@@ -9,11 +11,12 @@ import {FixedPointMath} from "./libraries/FixedPointMath.sol";
 
 /**
  * @title LiquidityPool
- * @notice Pool de liquidez tokenizado — skeleton fase 2 (previews + validación; mutaciones en fases 3–4).
- * @dev `previewDeposit` / `previewWithdraw` usan `FixedPointMath` UD60x18.
- *      `deposit` / `withdraw` validan slippage pero aún no ejecutan mint/burn (fases 3–4).
+ * @notice Pool de liquidez tokenizado con LP shares y anti-inflation guard.
+ * @dev Fase 3: `deposit` con CEI (mint antes de transfer). Fase 4: `withdraw`.
  */
 contract LiquidityPool is ILiquidityPool, LiquidityPoolERC20, ReentrancyGuard {
+    using SafeERC20 for IERC20;
+
     /// @inheritdoc ILiquidityPool
     address public immutable underlying;
 
@@ -68,7 +71,20 @@ contract LiquidityPool is ILiquidityPool, LiquidityPoolERC20, ReentrancyGuard {
         if (shares == 0) revert ZeroLiquidity();
         if (shares < minSharesOut) revert SlippageExceeded();
 
-        revert ZeroLiquidity();
+        bool isFirstDeposit = totalSupply == 0;
+
+        // CEI: mint LP antes de pull del underlying.
+        if (isFirstDeposit) {
+            _mint(address(0), _minimumLiquidity());
+        }
+        _mint(to, shares);
+
+        totalAssets += assets;
+        lockUntil[to] = block.timestamp + lockDuration;
+
+        emit Deposit(msg.sender, to, assets, shares);
+
+        IERC20(underlying).safeTransferFrom(msg.sender, address(this), assets);
     }
 
     /// @inheritdoc ILiquidityPool
