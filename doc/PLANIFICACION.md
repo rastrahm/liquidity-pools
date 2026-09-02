@@ -1,6 +1,6 @@
 # Planificación — Module 07: Liquidity Pools & Fee Distribution
 
-**Estado:** Fase **0** — documentación y diseño (contratos pendientes).
+**Estado:** Fase **0** ✅ — scaffold Foundry + interfaces + docs.
 
 ## 1. Objetivo del proyecto
 
@@ -168,7 +168,7 @@ mapping(address => uint256) public lockUntil;  // Timestamp de desbloqueo por LP
 
 | Fase | Entregable | Estado |
 |------|------------|--------|
-| **0** | Scaffold Foundry + docs + interfaces | 🔄 En curso |
+| **0** | Scaffold Foundry + docs + interfaces | ✅ |
 | **1** | Tests failing: deposit / withdraw / reverts | ⏳ |
 | **2** | `FixedPointMath` (UD60x18) + skeleton `LiquidityPool` | ⏳ |
 | **3** | `deposit` + MINIMUM_LIQUIDITY + anti-inflation | ⏳ |
