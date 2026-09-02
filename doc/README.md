@@ -9,7 +9,7 @@
 | [diagrama-flujo.md](./diagrama-flujo.md) | Flujos deposit / withdraw / fee accrual |
 | [flujograma.md](./flujograma.md) | Operativo, anti-inflation, pipeline TDD |
 
-**Estado:** Fase **1** ✅ — tests TDD (13 rojos / 7 verdes).
+**Estado:** Fase **2** ✅ — FixedPointMath + skeleton previews.
 
-**Contratos (planificados):** `LiquidityPool` · `LiquidityPoolFactory` · `FixedPointMath`  
-**Tests:** `forge test --match-contract LiquidityPoolTest` → **7 PASS / 13 FAIL** (rojos hasta fases 3–4)
+**Contratos:** `LiquidityPool` (skeleton) · `FixedPointMath` · `LiquidityPoolERC20`  
+**Tests:** `forge test` → **27 PASS / 12 FAIL** (deposit/withdraw en fases 3–4)

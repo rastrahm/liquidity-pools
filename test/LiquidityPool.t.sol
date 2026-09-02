@@ -9,8 +9,8 @@ import {MockERC20} from "../src/mocks/MockERC20.sol";
 
 /**
  * @title LiquidityPoolTest
- * @notice Suite TDD del pool: deposit / withdraw / reverts (fase 1 — tests rojos).
- * @dev Caminos felices fallan hasta fases 3–4. Reverts básicos verdes con el stub fase 1.
+ * @notice Suite TDD del pool: deposit / withdraw / reverts.
+ * @dev Fase 2: previews verdes. Caminos felices deposit/withdraw rojos hasta fases 3–4.
  */
 contract LiquidityPoolTest is Test {
     uint256 internal constant MINIMUM_LIQUIDITY = 1000;
@@ -62,6 +62,33 @@ contract LiquidityPoolTest is Test {
      */
     function test_lockUntil_initialIsZero() public view {
         assertEq(pool.lockUntil(lp), 0);
+    }
+
+    // -------------------------------------------------------------------------
+    // preview — fase 2 (verdes)
+    // -------------------------------------------------------------------------
+
+    /**
+     * @notice `previewDeposit` en pool vacío: assets - MINIMUM_LIQUIDITY.
+     */
+    function test_previewDeposit_firstDeposit_onEmptyPool() public view {
+        uint256 shares = pool.previewDeposit(FIRST_DEPOSIT);
+        assertEq(shares, FIRST_DEPOSIT - MINIMUM_LIQUIDITY);
+    }
+
+    /**
+     * @notice `previewDeposit` con assets ≤ MINIMUM_LIQUIDITY retorna 0.
+     */
+    function test_previewDeposit_firstDepositTooSmallReturnsZero() public view {
+        assertEq(pool.previewDeposit(MINIMUM_LIQUIDITY), 0);
+        assertEq(pool.previewDeposit(500), 0);
+    }
+
+    /**
+     * @notice `previewWithdraw` en pool vacío retorna 0.
+     */
+    function test_previewWithdraw_emptyPoolReturnsZero() public view {
+        assertEq(pool.previewWithdraw(100 ether), 0);
     }
 
     // -------------------------------------------------------------------------
@@ -343,7 +370,7 @@ contract LiquidityPoolTest is Test {
     // -------------------------------------------------------------------------
 
     /**
-     * @dev Depósito auxiliar — falla en fase 1 hasta implementar `deposit` (fase 3).
+     * @dev Depósito auxiliar — requiere `deposit` implementado (fase 3).
      */
     function _deposit(address user, uint256 assets) internal {
         vm.startPrank(user);
