@@ -2,7 +2,7 @@
 
 Motor de tokenización de pools de liquidez con distribución proporcional de fees, contabilidad dinámica de depósitos/retiros y protección anti-inflation attack. Solidity `0.8.24` + Foundry.
 
-**Estado:** Fase **1** ✅ — tests TDD deposit/withdraw (13 rojos, 7 verdes).
+**Estado:** Fase **2** ✅ — `FixedPointMath` + skeleton `LiquidityPool` (previews).
 
 ---
 
@@ -44,14 +44,16 @@ forge test
 
 ---
 
-## Estructura (fase 1)
+## Estructura (fase 2)
 
 ```
-src/interfaces/           # ILiquidityPool, ILiquidityPoolFactory
-src/LiquidityPool.sol     # Stub fase 1 (validaciones; lógica en fases 2–5)
+src/interfaces/              # ILiquidityPool, ILiquidityPoolFactory
+src/libraries/FixedPointMath.sol
+src/LiquidityPool.sol          # Skeleton: previews + validación slippage
 src/LiquidityPoolERC20.sol
-src/mocks/                # MockERC20
-test/LiquidityPool.t.sol  # 20 tests TDD (13 rojos)
+src/mocks/MockERC20.sol
+test/LiquidityPool.t.sol       # 23 tests (11 verdes / 12 rojos)
+test/FixedPointMath.t.sol      # 13 tests
 test/Scaffold.t.sol
 script/Deploy.s.sol
 doc/
@@ -59,12 +61,12 @@ doc/
 
 ---
 
-## Tests TDD (fase 1)
+## Tests TDD
 
 ```shell
-forge test --match-contract LiquidityPoolTest
-# 7 passed — constructor + reverts básicos (stub)
-# 13 failed — caminos felices deposit/withdraw (fases 3–4)
+forge test
+# 27 passed — FixedPointMath + previews + reverts básicos
+# 12 failed — deposit/withdraw mutating (fases 3–4)
 ```
 
 ---
@@ -73,7 +75,6 @@ forge test --match-contract LiquidityPoolTest
 
 | Fase | Entregable |
 |------|------------|
-| 2 | `FixedPointMath` + skeleton `LiquidityPool` |
 | 3 | `deposit` + MINIMUM_LIQUIDITY + anti-inflation |
 | 4 | `withdraw` + slippage + lock time |
 | 5 | Fee accrual proporcional |
