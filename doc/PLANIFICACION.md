@@ -1,6 +1,6 @@
 # Planificación — Module 07: Liquidity Pools & Fee Distribution
 
-**Estado:** Fase **0** ✅ — scaffold Foundry + interfaces + docs.
+**Estado:** Fase **1** ✅ — tests TDD deposit/withdraw (13 rojos, 7 verdes con stub).
 
 ## 1. Objetivo del proyecto
 
@@ -169,7 +169,7 @@ mapping(address => uint256) public lockUntil;  // Timestamp de desbloqueo por LP
 | Fase | Entregable | Estado |
 |------|------------|--------|
 | **0** | Scaffold Foundry + docs + interfaces | ✅ |
-| **1** | Tests failing: deposit / withdraw / reverts | ⏳ |
+| **1** | Tests failing: deposit / withdraw / reverts | ✅ |
 | **2** | `FixedPointMath` (UD60x18) + skeleton `LiquidityPool` | ⏳ |
 | **3** | `deposit` + MINIMUM_LIQUIDITY + anti-inflation | ⏳ |
 | **4** | `withdraw` + slippage + lock time | ⏳ |
@@ -196,7 +196,7 @@ mapping(address => uint256) public lockUntil;  // Timestamp de desbloqueo por LP
 ## 10. Criterios de aceptación
 
 - [ ] Scaffold Foundry (`0.8.24`, fuzz ≥ 1000)
-- [ ] TDD deposit / withdraw con tests rojos primero
+- [x] TDD deposit / withdraw con tests rojos primero
 - [ ] `MINIMUM_LIQUIDITY` (1000 wei) quemado en primer depósito
 - [ ] Fee distribution vía `UD60x18` sin drift de rounding crítico
 - [ ] CEI: mint/burn **antes** de transfers ERC-20
