@@ -9,7 +9,6 @@
 | [diagrama-flujo.md](./diagrama-flujo.md) | Flujos deposit / withdraw / fee accrual |
 | [flujograma.md](./flujograma.md) | Operativo, anti-inflation, pipeline TDD |
 
-**Estado:** Fase **4** ✅ — deposit + withdraw.
+**Estado:** Fase **5** ✅ — deposit + withdraw + fee accrual.
 
-**Contratos:** `LiquidityPool` · `FixedPointMath` · `LiquidityPoolERC20`  
-**Tests:** `forge test` → **39 PASS**
+**Tests:** `forge test` → **47 PASS**

@@ -1,6 +1,6 @@
 # Planificación — Module 07: Liquidity Pools & Fee Distribution
 
-**Estado:** Fase **4** ✅ — `deposit` + `withdraw` (lock time, slippage, CEI).
+**Estado:** Fase **5** ✅ — fee accrual proporcional (`accFeePerShare` UD60x18).
 
 ## 1. Objetivo del proyecto
 
@@ -173,7 +173,7 @@ mapping(address => uint256) public lockUntil;  // Timestamp de desbloqueo por LP
 | **2** | `FixedPointMath` (UD60x18) + skeleton `LiquidityPool` | ✅ |
 | **3** | `deposit` + MINIMUM_LIQUIDITY + anti-inflation | ✅ |
 | **4** | `withdraw` + slippage + lock time | ✅ |
-| **5** | Fee accrual proporcional (`accFeePerShare`) | ⏳ |
+| **5** | Fee accrual proporcional (`accFeePerShare`) | ✅ |
 | **6** | `LiquidityPoolFactory` + deploy script | ⏳ |
 | **7** | Fuzz + invariant + FirstDepositAttack tests | ⏳ |
 | **8** | Gas snapshot + NatSpec + SafeERC20 hardening | ⏳ |
@@ -198,7 +198,7 @@ mapping(address => uint256) public lockUntil;  // Timestamp de desbloqueo por LP
 - [ ] Scaffold Foundry (`0.8.24`, fuzz ≥ 1000)
 - [x] TDD deposit / withdraw con tests rojos primero
 - [x] `MINIMUM_LIQUIDITY` (1000 wei) quemado en primer depósito
-- [ ] Fee distribution vía `UD60x18` sin drift de rounding crítico
+- [x] Fee distribution vía `UD60x18` sin drift de rounding crítico
 - [x] CEI: mint/burn **antes** de transfers ERC-20 (deposit + withdraw)
 - [ ] Custom errors (sin strings en `require`)
 - [ ] `ReentrancyGuard` en deposit/withdraw
