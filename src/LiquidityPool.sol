@@ -12,7 +12,7 @@ import {FixedPointMath} from "./libraries/FixedPointMath.sol";
 /**
  * @title LiquidityPool
  * @notice Pool de liquidez tokenizado con LP shares y anti-inflation guard.
- * @dev Fase 3: `deposit` con CEI (mint antes de transfer). Fase 4: `withdraw`.
+ * @dev CEI en `deposit`/`withdraw` (mint/burn antes de transfers). Fase 5: fee accrual.
  */
 contract LiquidityPool is ILiquidityPool, LiquidityPoolERC20, ReentrancyGuard {
     using SafeERC20 for IERC20;
@@ -97,7 +97,13 @@ contract LiquidityPool is ILiquidityPool, LiquidityPoolERC20, ReentrancyGuard {
         if (assets == 0) revert ZeroLiquidity();
         if (assets < minAssetsOut) revert SlippageExceeded();
 
-        revert ZeroLiquidity();
+        // CEI: burn LP y actualizar reservas antes de transferir underlying.
+        _burn(msg.sender, shares);
+        totalAssets -= assets;
+
+        emit Withdraw(msg.sender, to, msg.sender, assets, shares);
+
+        IERC20(underlying).safeTransfer(to, assets);
     }
 
     /// @inheritdoc ILiquidityPool
