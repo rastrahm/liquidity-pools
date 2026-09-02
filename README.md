@@ -2,7 +2,7 @@
 
 Motor de tokenización de pools de liquidez con distribución proporcional de fees, contabilidad dinámica de depósitos/retiros y protección anti-inflation attack. Solidity `0.8.24` + Foundry.
 
-**Estado:** Fase **3** ✅ — `deposit` + anti-inflation guard.
+**Estado:** Fase **5** ✅ — fee accrual proporcional (`accFeePerShare`).
 
 ---
 
@@ -44,14 +44,14 @@ forge test
 
 ---
 
-## Estructura (fase 3)
+## Estructura (fase 5)
 
 ```
 src/libraries/FixedPointMath.sol
-src/LiquidityPool.sol          # deposit ✅ · withdraw (fase 4)
+src/LiquidityPool.sol          # deposit · withdraw · accrueFees ✅
 src/LiquidityPoolERC20.sol
 src/mocks/MockERC20.sol
-test/LiquidityPool.t.sol       # 20/23 verdes
+test/LiquidityPool.t.sol       # 31/31 verdes
 test/FixedPointMath.t.sol
 ```
 
@@ -61,8 +61,7 @@ test/FixedPointMath.t.sol
 
 ```shell
 forge test
-# 36 passed — deposit + previews + reverts withdraw
-# 3 failed — withdraw feliz (fase 4)
+# 47 passed — deposit + withdraw + fees + FixedPointMath + scaffold
 ```
 
 ---
@@ -71,8 +70,6 @@ forge test
 
 | Fase | Entregable |
 |------|------------|
-| 4 | `withdraw` + slippage + lock time |
-| 5 | Fee accrual proporcional |
 | 6 | `LiquidityPoolFactory` + deploy script |
 | 7 | Fuzz + invariant + FirstDepositAttack |
 | 8 | Gas snapshot + NatSpec + SafeERC20 |

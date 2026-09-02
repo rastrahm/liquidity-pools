@@ -2,6 +2,7 @@
 pragma solidity 0.8.24;
 
 import {Test} from "forge-std/Test.sol";
+import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 
 import {ILiquidityPool} from "../src/interfaces/ILiquidityPool.sol";
 import {LiquidityPool} from "../src/LiquidityPool.sol";
@@ -10,7 +11,7 @@ import {MockERC20} from "../src/mocks/MockERC20.sol";
 /**
  * @title LiquidityPoolTest
  * @notice Suite TDD del pool: deposit / withdraw / reverts.
- * @dev Fase 3: deposit verde. Withdraw mutating rojo hasta fase 4.
+ * @dev Fases 3–5: deposit, withdraw y fee accrual verdes.
  */
 contract LiquidityPoolTest is Test {
     uint256 internal constant MINIMUM_LIQUIDITY = 1000;
@@ -229,7 +230,7 @@ contract LiquidityPoolTest is Test {
     }
 
     // -------------------------------------------------------------------------
-    // withdraw — caminos felices (rojos hasta fase 4)
+    // withdraw — caminos felices (fase 4)
     // -------------------------------------------------------------------------
 
     /**
@@ -346,6 +347,133 @@ contract LiquidityPoolTest is Test {
     }
 
     // -------------------------------------------------------------------------
+    // fee accrual — fase 5
+    // -------------------------------------------------------------------------
+
+    uint256 internal constant FEE_AMOUNT = 100 ether;
+
+    /**
+     * @notice `accrueFees` incrementa share price y `accFeePerShare` para LPs existentes.
+     */
+    function test_accrueFees_increasesSharePriceForExistingLp() public {
+        _deposit(lp, FIRST_DEPOSIT);
+
+        uint256 shares = pool.balanceOf(lp);
+        uint256 assetsBefore = pool.previewWithdraw(shares);
+
+        _accrueFees(FEE_AMOUNT);
+
+        uint256 assetsAfter = pool.previewWithdraw(shares);
+        assertGt(assetsAfter, assetsBefore);
+        assertEq(pool.totalAssets(), FIRST_DEPOSIT + FEE_AMOUNT);
+    }
+
+    /**
+     * @notice `accFeePerShare` sigue fórmula UD60x18: fee * 1e18 / totalSupply.
+     */
+    function test_accrueFees_updatesAccFeePerShare() public {
+        _deposit(lp, FIRST_DEPOSIT);
+
+        _accrueFees(FEE_AMOUNT);
+
+        uint256 expectedAcc = (FEE_AMOUNT * 1e18) / pool.totalSupply();
+        assertEq(pool.accFeePerShare(), expectedAcc);
+    }
+
+    /**
+     * @notice Emite `FeesAccrued` con fee delta y acumulador actualizado.
+     */
+    function test_accrueFees_emitsFeesAccrued() public {
+        _deposit(lp, FIRST_DEPOSIT);
+
+        uint256 expectedAcc = (FEE_AMOUNT * 1e18) / pool.totalSupply();
+
+        underlying.mint(address(this), FEE_AMOUNT);
+
+        vm.expectEmit(true, true, true, true, address(underlying));
+        emit IERC20.Transfer(address(this), address(pool), FEE_AMOUNT);
+        underlying.transfer(address(pool), FEE_AMOUNT);
+
+        vm.expectEmit(false, false, false, true, address(pool));
+        emit ILiquidityPool.FeesAccrued(FEE_AMOUNT, expectedAcc);
+        pool.accrueFees(0);
+    }
+
+    /**
+     * @notice Donación directa + `accrueFees(0)` sincroniza y distribuye fees.
+     */
+    function test_accrueFees_syncsDirectDonation() public {
+        _deposit(lp, FIRST_DEPOSIT);
+
+        underlying.mint(address(this), FEE_AMOUNT);
+        underlying.transfer(address(pool), FEE_AMOUNT);
+
+        uint256 shares = pool.balanceOf(lp);
+        uint256 assetsBefore = pool.previewWithdraw(shares);
+
+        pool.accrueFees(0);
+
+        assertEq(pool.totalAssets(), FIRST_DEPOSIT + FEE_AMOUNT);
+        assertGt(pool.previewWithdraw(shares), assetsBefore);
+    }
+
+    /**
+     * @notice Fees antes del primer LP quedan en reserva (`totalAssets` ↑, acc sin cambio).
+     */
+    function test_accrueFees_beforeFirstDeposit_pendingInReserve() public {
+        _accrueFees(FEE_AMOUNT);
+
+        assertEq(pool.totalAssets(), FEE_AMOUNT);
+        assertEq(pool.accFeePerShare(), 0);
+        assertEq(pool.totalSupply(), 0);
+    }
+
+    /**
+     * @notice Primer LP posterior a fees pre-deposito se beneficia del share price elevado.
+     */
+    function test_accrueFees_preDepositFeesBenefitFirstLp() public {
+        _accrueFees(FEE_AMOUNT);
+
+        _deposit(lp, FIRST_DEPOSIT);
+
+        uint256 shares = pool.balanceOf(lp);
+        uint256 withdrawable = pool.previewWithdraw(shares);
+        assertGt(withdrawable, FIRST_DEPOSIT - MINIMUM_LIQUIDITY);
+    }
+
+    /**
+     * @notice LP existente captura fees acumulados antes de que entre un segundo LP.
+     */
+    function test_accrueFees_existingLpKeepsFeeAdvantageOverNewLp() public {
+        _deposit(lp, FIRST_DEPOSIT);
+        _accrueFees(FEE_AMOUNT);
+
+        uint256 lp1SharesBefore = pool.balanceOf(lp);
+        uint256 lp1AssetsBefore = pool.previewWithdraw(lp1SharesBefore);
+
+        _deposit(lp2, SECOND_DEPOSIT);
+
+        uint256 lp1AssetsAfter = pool.previewWithdraw(lp1SharesBefore);
+        assertEq(lp1AssetsAfter, lp1AssetsBefore);
+        assertGt(lp1AssetsAfter, pool.previewWithdraw(pool.balanceOf(lp2)));
+    }
+
+    /**
+     * @notice `accrueFees(0)` sin donación no modifica estado ni emite evento.
+     */
+    function test_accrueFees_zeroAmountNoOpWhenSynced() public {
+        _deposit(lp, FIRST_DEPOSIT);
+
+        uint256 assetsBefore = pool.totalAssets();
+        uint256 accBefore = pool.accFeePerShare();
+
+        pool.accrueFees(0);
+
+        assertEq(pool.totalAssets(), assetsBefore);
+        assertEq(pool.accFeePerShare(), accBefore);
+    }
+
+    // -------------------------------------------------------------------------
     // Multi-user
     // -------------------------------------------------------------------------
 
@@ -370,12 +498,21 @@ contract LiquidityPoolTest is Test {
     // -------------------------------------------------------------------------
 
     /**
-     * @dev Depósito auxiliar — requiere `deposit` implementado (fase 3).
+     * @dev Depósito auxiliar.
      */
     function _deposit(address user, uint256 assets) internal {
         vm.startPrank(user);
         underlying.approve(address(pool), assets);
         pool.deposit(assets, user, 0);
         vm.stopPrank();
+    }
+
+    /**
+     * @dev Acumula fees desde el contrato de test hacia el pool.
+     */
+    function _accrueFees(uint256 amount) internal {
+        underlying.mint(address(this), amount);
+        underlying.approve(address(pool), amount);
+        pool.accrueFees(amount);
     }
 }

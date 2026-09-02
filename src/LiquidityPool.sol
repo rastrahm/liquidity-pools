@@ -11,8 +11,8 @@ import {FixedPointMath} from "./libraries/FixedPointMath.sol";
 
 /**
  * @title LiquidityPool
- * @notice Pool de liquidez tokenizado con LP shares y anti-inflation guard.
- * @dev Fase 3: `deposit` con CEI (mint antes de transfer). Fase 4: `withdraw`.
+ * @notice Pool de liquidez tokenizado con LP shares, anti-inflation guard y fee accrual.
+ * @dev CEI en `deposit`/`withdraw`. Fees incrementan share price vía `accFeePerShare` UD60x18.
  */
 contract LiquidityPool is ILiquidityPool, LiquidityPoolERC20, ReentrancyGuard {
     using SafeERC20 for IERC20;
@@ -97,11 +97,41 @@ contract LiquidityPool is ILiquidityPool, LiquidityPoolERC20, ReentrancyGuard {
         if (assets == 0) revert ZeroLiquidity();
         if (assets < minAssetsOut) revert SlippageExceeded();
 
-        revert ZeroLiquidity();
+        // CEI: burn LP y actualizar reservas antes de transferir underlying.
+        _burn(msg.sender, shares);
+        totalAssets -= assets;
+
+        emit Withdraw(msg.sender, to, msg.sender, assets, shares);
+
+        IERC20(underlying).safeTransfer(to, assets);
     }
 
     /// @inheritdoc ILiquidityPool
-    function accrueFees(uint256) external view {}
+    function accrueFees(uint256 amount) external nonReentrant {
+        if (amount > 0) {
+            IERC20(underlying).safeTransferFrom(msg.sender, address(this), amount);
+        }
+
+        _syncFees();
+    }
+
+    /**
+     * @notice Sincroniza `totalAssets` con el balance y distribuye fee delta a LPs.
+     * @dev Si `totalSupply == 0`, los fees quedan en reserva hasta el primer depósito.
+     */
+    function _syncFees() internal {
+        uint256 balance = IERC20(underlying).balanceOf(address(this));
+        if (balance <= totalAssets) return;
+
+        uint256 feeDelta = balance - totalAssets;
+        totalAssets = balance;
+
+        if (totalSupply > 0) {
+            accFeePerShare = FixedPointMath.accrueFeePerShare(feeDelta, totalSupply, accFeePerShare);
+        }
+
+        emit FeesAccrued(feeDelta, accFeePerShare);
+    }
 
     /**
      * @notice Convierte assets a shares usando estado actual del pool.
