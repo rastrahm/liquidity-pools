@@ -9,7 +9,7 @@
 | [diagrama-flujo.md](./diagrama-flujo.md) | Flujos deposit / withdraw / fee accrual |
 | [flujograma.md](./flujograma.md) | Operativo, anti-inflation, pipeline TDD |
 
-**Estado:** Fase **0** ✅ — scaffold Foundry + interfaces.
+**Estado:** Fase **1** ✅ — tests TDD (13 rojos / 7 verdes).
 
 **Contratos (planificados):** `LiquidityPool` · `LiquidityPoolFactory` · `FixedPointMath`  
-**Tests:** `forge test` (scaffold) — suites completas en fases 1–7
+**Tests:** `forge test --match-contract LiquidityPoolTest` → **7 PASS / 13 FAIL** (rojos hasta fases 3–4)
