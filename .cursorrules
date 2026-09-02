@@ -1,0 +1,29 @@
+# .cursorrules — Module 07: Liquidity Pools & Fee Distribution
+
+## MODULE OVERVIEW
+Focus on building a production-grade Liquidity Pool tokenization engine with proportional fee distribution, dynamic deposit/withdrawal accounting, and mathematical protections against flash loan inflation attacks using Foundry and Solidity 0.8.24.
+
+---
+
+## 1. TECHNICAL CONSTRAINTS & STACK
+
+- **Compiler Version:** Strictly `pragma solidity 0.8.24;` (no floating pragmas).
+- **Tooling:** Foundry (`forge` for unit tests, fuzzing, and invariant checks).
+- **Accounting Standard:** Inherit internal ERC-20 implementation for LP token representation (`mint`/`burn` hooks linked directly to reserve share ratios).
+
+---
+
+## 2. CODING & SECURITY RULES
+
+- **Inflation Attack Guard:** Burn a minimum initial liquidity tranche (`1000` wei) to `address(0)` on the first liquidity provision to freeze the share-to-reserve ratio.
+- **Precision Accounting:** Use fixed-point integer math (`UD60x18` style scaling) to prevent rounding errors in fee payouts.
+- **Custom Errors:** Strictly enforce custom errors (`error ZeroLiquidity()`, `error SlippageExceeded()`, `error InvalidRatio()`, `error LockTimeNotExpired()`).
+- **Checks-Effects-Interactions:** Mint or burn LP shares strictly BEFORE executing ERC-20 transfers to external user accounts.
+
+---
+
+## 3. TESTING REQUIREMENTS
+
+- **Foundry Unit Tests:** Test deposit/withdrawal edge cases, zero-balance edge scenarios, and multi-user pool share dilutions.
+- **First-Deposit Attack Tests:** Verify that first-depositor manipulation/donation attacks cannot drain subsequent user deposits.
+- **Fuzzing Tests:** Fuzz liquidity amounts and slippage tolerances ensuring pool reserves remain balanced.
