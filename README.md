@@ -2,7 +2,7 @@
 
 Motor de tokenización de pools de liquidez con distribución proporcional de fees, contabilidad dinámica de depósitos/retiros y protección anti-inflation attack. Solidity `0.8.24` + Foundry.
 
-**Estado:** Fase **2** ✅ — `FixedPointMath` + skeleton `LiquidityPool` (previews).
+**Estado:** Fase **3** ✅ — `deposit` + anti-inflation guard.
 
 ---
 
@@ -44,29 +44,25 @@ forge test
 
 ---
 
-## Estructura (fase 2)
+## Estructura (fase 3)
 
 ```
-src/interfaces/              # ILiquidityPool, ILiquidityPoolFactory
 src/libraries/FixedPointMath.sol
-src/LiquidityPool.sol          # Skeleton: previews + validación slippage
+src/LiquidityPool.sol          # deposit ✅ · withdraw (fase 4)
 src/LiquidityPoolERC20.sol
 src/mocks/MockERC20.sol
-test/LiquidityPool.t.sol       # 23 tests (11 verdes / 12 rojos)
-test/FixedPointMath.t.sol      # 13 tests
-test/Scaffold.t.sol
-script/Deploy.s.sol
-doc/
+test/LiquidityPool.t.sol       # 20/23 verdes
+test/FixedPointMath.t.sol
 ```
 
 ---
 
-## Tests TDD
+## Tests
 
 ```shell
 forge test
-# 27 passed — FixedPointMath + previews + reverts básicos
-# 12 failed — deposit/withdraw mutating (fases 3–4)
+# 36 passed — deposit + previews + reverts withdraw
+# 3 failed — withdraw feliz (fase 4)
 ```
 
 ---
@@ -75,7 +71,6 @@ forge test
 
 | Fase | Entregable |
 |------|------------|
-| 3 | `deposit` + MINIMUM_LIQUIDITY + anti-inflation |
 | 4 | `withdraw` + slippage + lock time |
 | 5 | Fee accrual proporcional |
 | 6 | `LiquidityPoolFactory` + deploy script |
