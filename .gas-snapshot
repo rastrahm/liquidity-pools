@@ -1,0 +1,7 @@
+LiquidityPoolGasTest:testGas_accrueFees() (gas: 218178)
+LiquidityPoolGasTest:testGas_createPool() (gas: 1415577)
+LiquidityPoolGasTest:testGas_firstDeposit() (gas: 173334)
+LiquidityPoolGasTest:testGas_previewDeposit() (gas: 10054)
+LiquidityPoolGasTest:testGas_previewWithdraw() (gas: 175697)
+LiquidityPoolGasTest:testGas_subsequentDeposit() (gas: 190163)
+LiquidityPoolGasTest:testGas_withdraw() (gas: 188404)

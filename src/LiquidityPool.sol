@@ -2,20 +2,24 @@
 pragma solidity 0.8.24;
 
 import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
-import {SafeERC20} from "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
 import {ReentrancyGuard} from "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
 
 import {ILiquidityPool} from "./interfaces/ILiquidityPool.sol";
 import {LiquidityPoolERC20} from "./LiquidityPoolERC20.sol";
 import {FixedPointMath} from "./libraries/FixedPointMath.sol";
+import {SafeTransfer} from "./libraries/SafeTransfer.sol";
 
 /**
  * @title LiquidityPool
  * @notice Pool de liquidez tokenizado con LP shares, anti-inflation guard y fee accrual.
- * @dev CEI en `deposit`/`withdraw`. Fees incrementan share price vía `accFeePerShare` UD60x18.
+ * @dev CEI en `deposit`/`withdraw`/`accrueFees`. Fees vía `accFeePerShare` (UD60x18).
+ *      Transfers con `SafeTransfer` (SWC-104, bubble-revert).
  */
 contract LiquidityPool is ILiquidityPool, LiquidityPoolERC20, ReentrancyGuard {
-    using SafeERC20 for IERC20;
+    using SafeTransfer for IERC20;
+
+    /// @dev Tranche mínima bloqueada en el primer depósito (`address(0)`).
+    uint256 private constant _MINIMUM_LIQUIDITY = 1000;
 
     /// @inheritdoc ILiquidityPool
     address public immutable underlying;
@@ -49,7 +53,7 @@ contract LiquidityPool is ILiquidityPool, LiquidityPoolERC20, ReentrancyGuard {
 
     /// @inheritdoc ILiquidityPool
     function MINIMUM_LIQUIDITY() external pure returns (uint256) {
-        return 1000;
+        return _MINIMUM_LIQUIDITY;
     }
 
     /// @inheritdoc ILiquidityPool
@@ -62,7 +66,10 @@ contract LiquidityPool is ILiquidityPool, LiquidityPoolERC20, ReentrancyGuard {
         return _convertToAssets(shares);
     }
 
-    /// @inheritdoc ILiquidityPool
+    /**
+     * @inheritdoc ILiquidityPool
+     * @dev CEI: mint LP + actualizar estado antes de `safeTransferFrom`.
+     */
     function deposit(uint256 assets, address to, uint256 minSharesOut) external nonReentrant returns (uint256 shares) {
         if (assets == 0) revert ZeroLiquidity();
         if (to == address(0)) revert ZeroAddress();
@@ -73,13 +80,14 @@ contract LiquidityPool is ILiquidityPool, LiquidityPoolERC20, ReentrancyGuard {
 
         bool isFirstDeposit = totalSupply == 0;
 
-        // CEI: mint LP antes de pull del underlying.
         if (isFirstDeposit) {
-            _mint(address(0), _minimumLiquidity());
+            _mint(address(0), _MINIMUM_LIQUIDITY);
         }
         _mint(to, shares);
 
-        totalAssets += assets;
+        unchecked {
+            totalAssets += assets;
+        }
         lockUntil[to] = block.timestamp + lockDuration;
 
         emit Deposit(msg.sender, to, assets, shares);
@@ -87,7 +95,10 @@ contract LiquidityPool is ILiquidityPool, LiquidityPoolERC20, ReentrancyGuard {
         IERC20(underlying).safeTransferFrom(msg.sender, address(this), assets);
     }
 
-    /// @inheritdoc ILiquidityPool
+    /**
+     * @inheritdoc ILiquidityPool
+     * @dev CEI: burn LP + actualizar reservas antes de `safeTransfer`.
+     */
     function withdraw(uint256 shares, address to, uint256 minAssetsOut) external nonReentrant returns (uint256 assets) {
         if (shares == 0) revert ZeroLiquidity();
         if (to == address(0)) revert ZeroAddress();
@@ -97,16 +108,20 @@ contract LiquidityPool is ILiquidityPool, LiquidityPoolERC20, ReentrancyGuard {
         if (assets == 0) revert ZeroLiquidity();
         if (assets < minAssetsOut) revert SlippageExceeded();
 
-        // CEI: burn LP y actualizar reservas antes de transferir underlying.
         _burn(msg.sender, shares);
-        totalAssets -= assets;
+        unchecked {
+            totalAssets -= assets;
+        }
 
         emit Withdraw(msg.sender, to, msg.sender, assets, shares);
 
         IERC20(underlying).safeTransfer(to, assets);
     }
 
-    /// @inheritdoc ILiquidityPool
+    /**
+     * @inheritdoc ILiquidityPool
+     * @dev `amount > 0` hace pull; `amount == 0` solo sincroniza donaciones on-chain.
+     */
     function accrueFees(uint256 amount) external nonReentrant {
         if (amount > 0) {
             IERC20(underlying).safeTransferFrom(msg.sender, address(this), amount);
@@ -120,14 +135,20 @@ contract LiquidityPool is ILiquidityPool, LiquidityPoolERC20, ReentrancyGuard {
      * @dev Si `totalSupply == 0`, los fees quedan en reserva hasta el primer depósito.
      */
     function _syncFees() internal {
-        uint256 balance = IERC20(underlying).balanceOf(address(this));
-        if (balance <= totalAssets) return;
+        IERC20 token = IERC20(underlying);
+        uint256 balance = token.balanceOf(address(this));
+        uint256 assetsCached = totalAssets;
+        if (balance <= assetsCached) return;
 
-        uint256 feeDelta = balance - totalAssets;
+        uint256 feeDelta;
+        unchecked {
+            feeDelta = balance - assetsCached;
+        }
         totalAssets = balance;
 
-        if (totalSupply > 0) {
-            accFeePerShare = FixedPointMath.accrueFeePerShare(feeDelta, totalSupply, accFeePerShare);
+        uint256 supply = totalSupply;
+        if (supply > 0) {
+            accFeePerShare = FixedPointMath.accrueFeePerShare(feeDelta, supply, accFeePerShare);
         }
 
         emit FeesAccrued(feeDelta, accFeePerShare);
@@ -139,7 +160,7 @@ contract LiquidityPool is ILiquidityPool, LiquidityPoolERC20, ReentrancyGuard {
      * @return shares LP shares estimadas.
      */
     function _convertToShares(uint256 assets) internal view returns (uint256 shares) {
-        return FixedPointMath.convertToShares(assets, totalSupply, totalAssets, _minimumLiquidity());
+        return FixedPointMath.convertToShares(assets, totalSupply, totalAssets, _MINIMUM_LIQUIDITY);
     }
 
     /**
@@ -149,13 +170,5 @@ contract LiquidityPool is ILiquidityPool, LiquidityPoolERC20, ReentrancyGuard {
      */
     function _convertToAssets(uint256 shares) internal view returns (uint256 assets) {
         return FixedPointMath.convertToAssets(shares, totalSupply, totalAssets);
-    }
-
-    /**
-     * @notice Liquidez mínima bloqueada en el primer depósito.
-     * @return Cantidad en wei (1000).
-     */
-    function _minimumLiquidity() internal pure returns (uint256) {
-        return 1000;
     }
 }
