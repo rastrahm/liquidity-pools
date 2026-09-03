@@ -111,12 +111,13 @@ Tokens enviados directamente al pool sin sync no alteran `totalAssets` (contabil
 |-----------|----------|--------|
 | Custom errors | ✅ | `ZeroLiquidity`, `SlippageExceeded`, `InvalidRatio`, `LockTimeNotExpired`, … |
 | ReentrancyGuard (OZ) | ✅ | deposit / withdraw / accrueFees |
-| SafeERC20 | ✅ | pull/push underlying |
+| SafeERC20 | ✅ | `SafeTransfer` propio (Fase 8, bubble-revert SWC-104) |
 | MINIMUM_LIQUIDITY anti-inflation | ✅ | 1000 wei → `address(0)` |
 | Fee accrual UD60x18 | ✅ | `FixedPointMath.accrueFeePerShare` |
-| NatSpec públicas/externas | ⏳ | Fase 8 hardening |
+| NatSpec públicas/externas | ✅ | Fase 8 |
 | Fuzz ≥ 1000 runs | ✅ | `test/fuzz/LiquidityPool.fuzz.t.sol` |
 | Invariantes solvencia / LP | ✅ | `test/invariant/` |
+| Gas baseline | ✅ | `doc/GAS.md` + `.gas-snapshot` |
 
 ---
 
@@ -126,7 +127,7 @@ Tokens enviados directamente al pool sin sync no alteran `totalAssets` (contabil
 |-----|---------|
 | SWC-101 | `testFuzz_deposit_*`, `testFuzz_withdraw_*`, `testFuzz_roundTrip_*`, `FixedPointMath.mulDiv` overflow |
 | SWC-103 | Compilador fijo (build) |
-| SWC-104 | Unit deposit/withdraw; SafeERC20 en pool |
+| SWC-104 | Unit deposit/withdraw; `SafeTransfer` bubble-revert |
 | SWC-107 | `test_Attack_reenterDeposit_*`, `test_Attack_reenterWithdraw_*`, `test_Attack_reenterAccrueFees_*` |
 | SWC-114 | `testFuzz_deposit_revertsSlippage`; documental arriba |
 | SWC-116 | Unit `lockUntil` / `LockTimeNotExpired` |

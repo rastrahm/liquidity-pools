@@ -1,6 +1,6 @@
 # Planificación — Module 07: Liquidity Pools & Fee Distribution
 
-**Estado:** Fase **7** ✅ — fuzz + invariant + attack + SWC-AUDIT.
+**Estado:** Fase **8** ✅ — gas snapshot + NatSpec + SafeTransfer (módulo cerrado).
 
 ## 1. Objetivo del proyecto
 
@@ -176,7 +176,7 @@ mapping(address => uint256) public lockUntil;  // Timestamp de desbloqueo por LP
 | **5** | Fee accrual proporcional (`accFeePerShare`) | ✅ |
 | **6** | `LiquidityPoolFactory` + deploy script | ✅ |
 | **7** | Fuzz + invariant + FirstDepositAttack tests | ✅ |
-| **8** | Gas snapshot + NatSpec + SafeERC20 hardening | ⏳ |
+| **8** | Gas snapshot + NatSpec + SafeERC20 hardening | ✅ |
 
 ---
 
@@ -205,8 +205,10 @@ mapping(address => uint256) public lockUntil;  // Timestamp de desbloqueo por LP
 - [x] Tests first-deposit attack pasan
 - [x] Fuzz con `bound()` en amounts y slippage
 - [x] Invariant: reservas balanceadas tras secuencias aleatorias
-- [ ] NatSpec en funciones public/external
+- [x] NatSpec en funciones public/external
 - [x] `vm.expectRevert` en todos los caminos de fallo
+- [x] Gas baseline (`doc/GAS.md` + `.gas-snapshot`)
+- [x] `SafeTransfer` hardened (bubble-revert SWC-104)
 
 ---
 
@@ -218,6 +220,7 @@ mapping(address => uint256) public lockUntil;  // Timestamp de desbloqueo por LP
 | [diagrama-flujo.md](./diagrama-flujo.md) | Flujos deposit/withdraw/fee accrual |
 | [flujograma.md](./flujograma.md) | Operativo + anti-inflation + pipeline TDD |
 | [SWC-AUDIT.md](./SWC-AUDIT.md) | Matriz SWC-100–136 + mapeo a tests |
+| [GAS.md](./GAS.md) | Baseline gas, optimizaciones, snapshot |
 
 ---
 
