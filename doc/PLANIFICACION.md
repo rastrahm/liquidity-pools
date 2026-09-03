@@ -1,6 +1,6 @@
 # Planificación — Module 07: Liquidity Pools & Fee Distribution
 
-**Estado:** Fase **5** ✅ — fee accrual proporcional (`accFeePerShare` UD60x18).
+**Estado:** Fase **7** ✅ — fuzz + invariant + attack + SWC-AUDIT.
 
 ## 1. Objetivo del proyecto
 
@@ -174,8 +174,8 @@ mapping(address => uint256) public lockUntil;  // Timestamp de desbloqueo por LP
 | **3** | `deposit` + MINIMUM_LIQUIDITY + anti-inflation | ✅ |
 | **4** | `withdraw` + slippage + lock time | ✅ |
 | **5** | Fee accrual proporcional (`accFeePerShare`) | ✅ |
-| **6** | `LiquidityPoolFactory` + deploy script | ⏳ |
-| **7** | Fuzz + invariant + FirstDepositAttack tests | ⏳ |
+| **6** | `LiquidityPoolFactory` + deploy script | ✅ |
+| **7** | Fuzz + invariant + FirstDepositAttack tests | ✅ |
 | **8** | Gas snapshot + NatSpec + SafeERC20 hardening | ⏳ |
 
 ---
@@ -195,18 +195,18 @@ mapping(address => uint256) public lockUntil;  // Timestamp de desbloqueo por LP
 
 ## 10. Criterios de aceptación
 
-- [ ] Scaffold Foundry (`0.8.24`, fuzz ≥ 1000)
+- [x] Scaffold Foundry (`0.8.24`, fuzz ≥ 1000)
 - [x] TDD deposit / withdraw con tests rojos primero
 - [x] `MINIMUM_LIQUIDITY` (1000 wei) quemado en primer depósito
 - [x] Fee distribution vía `UD60x18` sin drift de rounding crítico
 - [x] CEI: mint/burn **antes** de transfers ERC-20 (deposit + withdraw)
-- [ ] Custom errors (sin strings en `require`)
-- [ ] `ReentrancyGuard` en deposit/withdraw
-- [ ] Tests first-deposit attack pasan
-- [ ] Fuzz con `bound()` en amounts y slippage
-- [ ] Invariant: reservas balanceadas tras secuencias aleatorias
+- [x] Custom errors (sin strings en `require`)
+- [x] `ReentrancyGuard` en deposit/withdraw
+- [x] Tests first-deposit attack pasan
+- [x] Fuzz con `bound()` en amounts y slippage
+- [x] Invariant: reservas balanceadas tras secuencias aleatorias
 - [ ] NatSpec en funciones public/external
-- [ ] `vm.expectRevert` en todos los caminos de fallo
+- [x] `vm.expectRevert` en todos los caminos de fallo
 
 ---
 
@@ -217,6 +217,7 @@ mapping(address => uint256) public lockUntil;  // Timestamp de desbloqueo por LP
 | [diagrama-clases.md](./diagrama-clases.md) | UML contratos, libs, tests |
 | [diagrama-flujo.md](./diagrama-flujo.md) | Flujos deposit/withdraw/fee accrual |
 | [flujograma.md](./flujograma.md) | Operativo + anti-inflation + pipeline TDD |
+| [SWC-AUDIT.md](./SWC-AUDIT.md) | Matriz SWC-100–136 + mapeo a tests |
 
 ---
 
