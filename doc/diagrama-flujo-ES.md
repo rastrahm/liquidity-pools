@@ -1,6 +1,8 @@
 # Diagrama de flujo — Liquidity Pools & Fee Distribution
 
-Flujos de negocio **to-be** (v1). Ver también [flujograma.md](./flujograma.md) y [PLANIFICACION.md](./PLANIFICACION.md).
+🌐 **Español** · [English](./diagrama-flujo-EN.md) · [Índice](./README.md)
+
+Flujos de negocio **to-be** (v1). Ver también [flujograma-ES.md](./flujograma-ES.md) y [PLANIFICACION-ES.md](./PLANIFICACION-ES.md).
 
 ## 1. Ciclo de vida del pool
 

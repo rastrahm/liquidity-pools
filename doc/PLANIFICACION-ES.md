@@ -1,5 +1,7 @@
 # Planificación — Module 07: Liquidity Pools & Fee Distribution
 
+🌐 **Español** · [English](./PLANIFICACION-EN.md) · [Índice](./README.md)
+
 **Estado:** Fase **8** ✅ — gas snapshot + NatSpec + SafeTransfer (módulo cerrado).
 
 ## 1. Objetivo del proyecto
@@ -61,11 +63,12 @@ Motor de **tokenización de pools de liquidez** con distribución proporcional d
 
 ```
 07-liquidity-pools/
-├── doc/                                    # Documentación de diseño
-│   ├── PLANIFICACION.md
-│   ├── diagrama-clases.md
-│   ├── diagrama-flujo.md
-│   └── flujograma.md
+├── doc/                                    # Documentación de diseño (-ES / -EN)
+│   ├── README.md                           # Índice bilingüe
+│   ├── PLANIFICACION-ES.md
+│   ├── diagrama-clases-ES.md
+│   ├── diagrama-flujo-ES.md
+│   └── flujograma-ES.md
 ├── src/
 │   ├── LiquidityPool.sol                   # Pool core: deposit/withdraw/fees/LP
 │   ├── LiquidityPoolFactory.sol            # Despliegue de pools por activo subyacente
@@ -207,7 +210,7 @@ mapping(address => uint256) public lockUntil;  // Timestamp de desbloqueo por LP
 - [x] Invariant: reservas balanceadas tras secuencias aleatorias
 - [x] NatSpec en funciones public/external
 - [x] `vm.expectRevert` en todos los caminos de fallo
-- [x] Gas baseline (`doc/GAS.md` + `.gas-snapshot`)
+- [x] Gas baseline (`doc/GAS-ES.md` + `.gas-snapshot`)
 - [x] `SafeTransfer` hardened (bubble-revert SWC-104)
 
 ---
@@ -216,11 +219,11 @@ mapping(address => uint256) public lockUntil;  // Timestamp de desbloqueo por LP
 
 | Documento | Contenido |
 |-----------|-----------|
-| [diagrama-clases.md](./diagrama-clases.md) | UML contratos, libs, tests |
-| [diagrama-flujo.md](./diagrama-flujo.md) | Flujos deposit/withdraw/fee accrual |
-| [flujograma.md](./flujograma.md) | Operativo + anti-inflation + pipeline TDD |
-| [SWC-AUDIT.md](./SWC-AUDIT.md) | Matriz SWC-100–136 + mapeo a tests |
-| [GAS.md](./GAS.md) | Baseline gas, optimizaciones, snapshot |
+| [diagrama-clases-ES.md](./diagrama-clases-ES.md) | UML contratos, libs, tests |
+| [diagrama-flujo-ES.md](./diagrama-flujo-ES.md) | Flujos deposit/withdraw/fee accrual |
+| [flujograma-ES.md](./flujograma-ES.md) | Operativo + anti-inflation + pipeline TDD |
+| [SWC-AUDIT-ES.md](./SWC-AUDIT-ES.md) | Matriz SWC-100–136 + mapeo a tests |
+| [GAS-ES.md](./GAS-ES.md) | Baseline gas, optimizaciones, snapshot |
 
 ---
 
