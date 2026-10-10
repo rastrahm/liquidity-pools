@@ -1,5 +1,7 @@
 # Optimización de gas — Liquidity Pools
 
+🌐 **Español** · [English](./GAS-EN.md) · [Índice](./README.md)
+
 Regenerar:
 
 ```bash
@@ -76,4 +78,4 @@ forge snapshot --match-contract LiquidityPoolGasTest
 
 ## Relación con seguridad
 
-Ver [`SWC-AUDIT.md`](./SWC-AUDIT.md): SafeTransfer cubre SWC-104; CEI + `nonReentrant` cubren SWC-107; fuzz/invariant validan que las opts no rompen solvencia.
+Ver [`SWC-AUDIT-ES.md`](./SWC-AUDIT-ES.md): SafeTransfer cubre SWC-104; CEI + `nonReentrant` cubren SWC-107; fuzz/invariant validan que las opts no rompen solvencia.

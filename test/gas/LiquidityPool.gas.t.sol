@@ -9,7 +9,7 @@ import {MockERC20} from "../../src/mocks/MockERC20.sol";
 
 /**
  * @title LiquidityPoolGasTest
- * @notice Baseline de gas para `forge snapshot` y `doc/GAS.md` (Fase 8).
+ * @notice Baseline de gas para `forge snapshot` y `doc/GAS-ES.md` (Fase 8).
  */
 contract LiquidityPoolGasTest is Test {
     uint256 internal constant LOCK_DURATION = 1 days;

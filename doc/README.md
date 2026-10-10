@@ -1,17 +1,18 @@
-# Documentación — Module 07: Liquidity Pools & Fee Distribution
+# Documentation · Documentación — Module 07
 
-Índice de la carpeta `doc/`. **Proyecto completo** (contratos + seguridad + gas).
+Bilingual index of the `doc/` folder · Índice bilingüe de la carpeta `doc/`.
 
-| Documento | Contenido |
-|-----------|-----------|
-| [PLANIFICACION.md](./PLANIFICACION.md) | Objetivo, alcance, fases TDD, criterios |
-| [SWC-AUDIT.md](./SWC-AUDIT.md) | Matriz SWC-100–136, mapeo a tests |
-| [GAS.md](./GAS.md) | Baseline gas, optimizaciones, snapshot |
-| [diagrama-clases.md](./diagrama-clases.md) | UML contratos / libs / tests |
-| [diagrama-flujo.md](./diagrama-flujo.md) | Flujos deposit / withdraw / fee accrual |
-| [flujograma.md](./flujograma.md) | Operativo, anti-inflation, pipeline TDD |
+| Document · Documento | 🇬🇧 English | 🇪🇸 Español |
+|----------------------|------------|------------|
+| Documentation index · Índice de documentación | [README-EN](./README-EN.md) | [README-ES](./README-ES.md) |
+| Planning · Planificación | [PLANIFICACION-EN](./PLANIFICACION-EN.md) | [PLANIFICACION-ES](./PLANIFICACION-ES.md) |
+| Technical decisions · Decisiones técnicas | [DECISIONES-TECNICAS-EN](./DECISIONES-TECNICAS-EN.md) | [DECISIONES-TECNICAS-ES](./DECISIONES-TECNICAS-ES.md) |
+| DeFi ↔ accounting dictionary · Diccionario contable | [DICCIONARIO-CONTABLE-EN](./DICCIONARIO-CONTABLE-EN.md) | [DICCIONARIO-CONTABLE-ES](./DICCIONARIO-CONTABLE-ES.md) |
+| SWC audit · Auditoría SWC | [SWC-AUDIT-EN](./SWC-AUDIT-EN.md) | [SWC-AUDIT-ES](./SWC-AUDIT-ES.md) |
+| Gas optimization · Optimización de gas | [GAS-EN](./GAS-EN.md) | [GAS-ES](./GAS-ES.md) |
+| Local deployment · Deploy local | [DEPLOY-EN](./DEPLOY-EN.md) | [DEPLOY-ES](./DEPLOY-ES.md) |
+| Class diagram · Diagrama de clases | [diagrama-clases-EN](./diagrama-clases-EN.md) | [diagrama-clases-ES](./diagrama-clases-ES.md) |
+| Flow diagram · Diagrama de flujo | [diagrama-flujo-EN](./diagrama-flujo-EN.md) | [diagrama-flujo-ES](./diagrama-flujo-ES.md) |
+| Flowchart · Flujograma | [flujograma-EN](./flujograma-EN.md) | [flujograma-ES](./flujograma-ES.md) |
 
-**Estado:** Fases **0–8** ✅
-
-**Contratos:** `LiquidityPool` · `LiquidityPoolFactory` · `FixedPointMath` · `SafeTransfer` · `LiquidityPoolERC20`  
-**Tests:** `forge test` → **78 PASS**
+← Back to the project · Volver al proyecto: [../README.md](../README.md)

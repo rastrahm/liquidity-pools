@@ -1,5 +1,7 @@
 # Diagrama de clases — Liquidity Pools & Fee Distribution
 
+🌐 **Español** · [English](./diagrama-clases-EN.md) · [Índice](./README.md)
+
 Modelo estructural **to-be** (módulo 07, planificación). Contratos, librerías y tests.
 
 ## 1. Diagrama principal (UML / Mermaid)

@@ -10,7 +10,7 @@ import {MockERC20Reentrant} from "../mocks/MockERC20Reentrant.sol";
 /**
  * @title ReentrancyAttackTest
  * @notice Fase 7 / SWC-107: callbacks ERC-20 maliciosos no reentran en deposit/withdraw/accrueFees.
- * @dev Referencia: `doc/SWC-AUDIT.md` · patrón monorepo módulo 06.
+ * @dev Referencia: `doc/SWC-AUDIT-ES.md` · patrón monorepo módulo 06.
  */
 contract ReentrancyAttackTest is Test {
     uint256 internal constant LOCK_DURATION = 1 days;

@@ -1,5 +1,7 @@
 # Flujograma del proyecto — Liquidity Pools & Fee Distribution
 
+🌐 **Español** · [English](./flujograma-EN.md) · [Índice](./README.md)
+
 Flujograma operativo **to-be** (v1): setup → depósito → fees → retiro → seguridad → TDD.
 
 ## 1. Flujograma maestro del sistema

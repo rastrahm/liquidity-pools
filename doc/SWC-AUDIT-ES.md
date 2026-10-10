@@ -1,5 +1,7 @@
 # Auditoría SWC — Liquidity Pools & Fee Distribution
 
+🌐 **Español** · [English](./SWC-AUDIT-EN.md) · [Índice](./README.md)
+
 Verificación de `LiquidityPool` y `LiquidityPoolFactory` contra el [SWC Registry](https://swcregistry.io/) (EIP-1470) y principios del monorepo (custom errors, `ReentrancyGuard`, SafeERC20, MINIMUM_LIQUIDITY, UD60x18).
 
 > **Nota:** El SWC Registry no se mantiene activamente desde ~2020. Complementar con [SCSVS](https://github.com/ComposableSecurity/SCSVS) y [EEA EthTrust](https://entethalliance.org/specs/ethtrust/).
@@ -7,7 +9,7 @@ Verificación de `LiquidityPool` y `LiquidityPoolFactory` contra el [SWC Registr
 **Contratos auditados:** `src/LiquidityPool.sol`, `src/LiquidityPoolFactory.sol`, `src/LiquidityPoolERC20.sol`, `src/libraries/FixedPointMath.sol`  
 **Fecha:** 2026-09-02  
 **Referencia tests:** `test/LiquidityPool.t.sol`, `test/LiquidityPoolFactory.t.sol`, `test/fuzz/`, `test/invariant/`, `test/attack/`  
-**Estilo:** alineado a [`06-token-swap/doc/SWC-AUDIT.md`](../../06-token-swap/doc/SWC-AUDIT.md)
+**Estilo:** alineado a [`06-token-swap/doc/SWC-AUDIT-ES.md`](../../06-token-swap/doc/SWC-AUDIT-ES.md)
 
 ---
 
@@ -117,7 +119,7 @@ Tokens enviados directamente al pool sin sync no alteran `totalAssets` (contabil
 | NatSpec públicas/externas | ✅ | Fase 8 |
 | Fuzz ≥ 1000 runs | ✅ | `test/fuzz/LiquidityPool.fuzz.t.sol` |
 | Invariantes solvencia / LP | ✅ | `test/invariant/` |
-| Gas baseline | ✅ | `doc/GAS.md` + `.gas-snapshot` |
+| Gas baseline | ✅ | `doc/GAS-ES.md` + `.gas-snapshot` |
 
 ---
 
@@ -141,5 +143,5 @@ Tokens enviados directamente al pool sin sync no alteran `totalAssets` (contabil
 
 - [SWC Registry](https://swcregistry.io/)
 - [EIP-1470](https://eips.ethereum.org/EIPS/eip-1470)
-- Módulo 06: [`06-token-swap/doc/SWC-AUDIT.md`](../../06-token-swap/doc/SWC-AUDIT.md)
-- Plan: [`PLANIFICACION.md`](./PLANIFICACION.md)
+- Módulo 06: [`06-token-swap/doc/SWC-AUDIT-ES.md`](../../06-token-swap/doc/SWC-AUDIT-ES.md)
+- Plan: [`PLANIFICACION-ES.md`](./PLANIFICACION-ES.md)

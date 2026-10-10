@@ -10,7 +10,7 @@ import {MockERC20} from "../../src/mocks/MockERC20.sol";
 /**
  * @title FirstDepositAttackTest
  * @notice Fase 7: donation / inflation attack no drena depósitos posteriores.
- * @dev Referencia: `doc/SWC-AUDIT.md` · MINIMUM_LIQUIDITY = 1000 wei a `address(0)`.
+ * @dev Referencia: `doc/SWC-AUDIT-ES.md` · MINIMUM_LIQUIDITY = 1000 wei a `address(0)`.
  */
 contract FirstDepositAttackTest is Test {
     uint256 internal constant MINIMUM_LIQUIDITY = 1000;
